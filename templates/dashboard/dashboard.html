@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Balances and Orders</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 p-10">
+    {% comment %} {% with messages = get_flashed_messages() %}
+    {% if messages %}
+       {% for message in messages %}
+          {{ message }}
+       {% endfor %}
+    {% endif %}
+ {% endwith %} {% endcomment %}
+ 
+
+    <div class="flex">
+    <div class="w-7/12">
+        
+        <h1 class="text-2xl font-bold my-4">Placed Orders</h1>
+        <table class="table-auto w-full">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2">User ID</th>
+                    <th class="px-4 py-2">Side</th>
+                    <th class="px-4 py-2">Quantity</th>
+                    <th class="px-4 py-2">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in placed_orders %}
+                <tr>
+                    <td class="border px-4 py-2">{{ order.user_id }}</td>
+                    <td class="border px-4 py-2">{{ order.side }}</td>
+                    <td class="border px-4 py-2">{{ order.quantity }}</td>
+                    <td class="border px-4 py-2">{{ order.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h1 class="text-2xl font-bold my-4">Executed Orders</h1>
+        <table class="table-auto w-full">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2">User ID (Seller)</th>
+                    <th class="px-4 py-2">User ID (Buyer)</th>
+                    <th class="px-4 py-2">Quantity</th>
+                    <th class="px-4 py-2">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in executed_orders %}
+                <tr>
+                    <td class="border px-4 py-2">{{ order.seller_id }}</td>
+                    <td class="border px-4 py-2">{{ order.buyer_id }}</td>
+                    <td class="border px-4 py-2">{{ order.quantity }}</td>
+                    <td class="border px-4 py-2">{{ order.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+      
+    </div>
+
+
+    <div class="w-5/12">
+        <table class="w-full border-collapse border border-gray-400">
+            <thead>
+                <tr>
+                    <th class="border border-gray-400 px-4 py-2">User ID</th>
+                    <th class="border border-gray-400 px-4 py-2">Name</th>
+                    <th class="border border-gray-400 px-4 py-2">Stock Name</th>
+                    <th class="border border-gray-400 px-4 py-2">Quantity</th>
+                    <th class="border border-gray-400 px-4 py-2">Balance (USD)</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {% for user in users %}
+                {% for balance in user.userstockbalance_set.all %}
+                <tr>
+                    <td class="border border-gray-400 px-4 py-2">{{ user.user.id }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ user.name }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ balance.stock.name }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ balance.quantity }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ user.balance }}</td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    </div>
+
+    <!-- Tailwind JS (not required but recommended) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/forms@2.2.19/dist/tailwindforms.min.js"></script>
+</body>
+</html>

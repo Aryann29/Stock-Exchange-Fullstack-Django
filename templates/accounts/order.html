@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Balances and Orders</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="">
+  
+    <div class="bg-white shadow-md rounded p-6 mb-4 w-96">
+        <div class="text-lg font-bold mb-4">Place Order</div>
+        <form method="post" class="flex flex-col">
+            {% csrf_token %}
+          <div class="mb-4">
+            <label for="quantity" class="block text-gray-700 text-sm font-bold mb-2">Quantity:</label>
+            <input id="quantity" name="quantity" type="number" placeholder="Quantity" required
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div class="mb-4 relative">
+            <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Price:</label>
+            <input id="price" name="price"  placeholder="Price" required
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <button type="button" onclick="fetchCurrentPrice()"
+                    class="absolute bg-neutral-950 text-white px-2 rounded right-4 top-[34px] ">Curr 
+            </button>
+          </div>
+      
+          <div class="grid grid-cols-2 gap-4">
+            <button type="submit"
+                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Buy
+            </button>
+            <button type="submit"
+                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Sell
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <script>
+        function fetchCurrentPrice() {
+          // Implement logic to fetch current price and fill the input field with it
+          // For example:
+          const currentPrice = 100; // Example current price
+          document.getElementById('price').value = currentPrice;
+        }
+      </script>
+      
+      
+</body>
+</html>

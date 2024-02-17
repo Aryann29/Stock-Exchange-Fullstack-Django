@@ -1,0 +1,41 @@
+<!-- balance_page.html -->
+{% extends 'base.html' %}
+
+{% block title %}Balance Page{% endblock %}
+
+{% block content %}
+    <div class=" bg-[#1e2433] h-screen text-white">
+        <h1 class="text-3xl font-semibold text-center mb-6">Welcome, {{ customer.name }}</h1>
+        
+        <div class="max-w-lg mx-auto bg-[#272f43] shadow-md p-8 rounded-md">
+            <div class="mb-4 flex justify-between">
+                <p class="text-lg font-semibold">Your Balance:</p>
+                <p class="text-xl">${{ customer.balance }}</p>
+            </div>
+            
+            <div>
+                <p class="text-lg font-semibold">Your Stock Balances:</p>
+                <table class="min-w-full divide-y divide-gray-200 text-white">
+                    <thead class="bg-[#1e2433]">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium">Stock Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium">Quantity</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium">Current Price</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium">Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-[#272f43] divide-y divide-gray-200">
+                        {% for balance in user_stock_balances %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ balance.stock.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ balance.quantity }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${{ balance.stock.current_price }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${{ balance.total_value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

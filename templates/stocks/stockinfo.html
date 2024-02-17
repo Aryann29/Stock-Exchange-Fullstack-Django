@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+
+{% block title %}Stock Exchange Home{% endblock %}
+
+{% block extra_head %}
+{% comment %} <!-- Include additional CSS or JavaScript files -->
+<link href="path/to/your/css/file.css" rel="stylesheet">
+<script src="path/to/your/js/file.js"></script> {% endcomment %}
+{% endblock %}
+
+{% block content %}
+
+<div class="flex w-full bg-[#1e2433] h-screen">
+
+    <!-- Listed Stocks -->
+    <div class="w-2/12 border-r-2 border-gray-400 h-screen text-white ">
+        <div class="flex justify-between text-gray-400 px-8 py-1 border-b"><span>Pair</span> <span>price</span>
+        </div>
+
+        <ul class="border border-gray-400 p-0">
+            {% for stk in stock_list %}
+            <a href="/stock/{{stk.ticker}}">
+                <li class="border-b p-5 bg-[#272f43]">
+                    <div class="flex justify-between items-center"><span class="flex flex-col">{{stk.ticker}}/INR
+                            <span
+                                class="text-center text-sm text-green-400">4.3%</span></span><span>{{stk.current_price}}</span>
+                    </div>
+                </li>
+            </a>
+
+            {% endfor %}
+
+
+
+
+        </ul>
+    </div>
+    <!-- Listed Stocks -->
+
+
+    <!-- Graph and Order -->
+
+    <div class="w-7/12  h-full">
+        <div class=" border  h-4/6">
+            <div class="">
+                <div class="flex justify-between py-1 border-b-2 px-5 text-white">
+                    <h1 class="text-[#e6e9f0] text-sm ">{{current_stock.ticker}}<span></span>/INR <span
+                            class="text-base text-[#abb1bf]">{{current_stock.name}}</span></h1>
+                    <div>₹<span>{{current_stock.current_price}}</span></div>
+                </div>
+
+                <!-- <div id="chart-container"></div> -->
+            </div>
+            <img src="{{graph}}" class="w-[900px] h-[445px]">
+            <!-- <img src="https://i.ibb.co/rykbdzQ/imgkkk.png"  width="785" > -->
+        </div>
+        <!-- Order Book-->
+        <div class=" flex  h-2/6 ">
+            <div class='w-1/2 flex '>
+                <div class="w-full items-center">
+                    <h1 class="text-gray-200 text-center border">Order Book</h1>
+                    <div class="w-full flex flex-col bg-[#272f43]">
+                        <div class="w-full bg-black text-white text-center py-1">
+                            {{current_stock.current_price}}
+                        </div>
+
+                        <div class="flex w-full">
+                            <div class="w-1/2 px-4">
+                                <div class="flex justify-between text-gray-300 text-xs py-1 px-2">
+                                    <div>Price</div>
+                                    <div>Quantity</div>
+                                </div>
+
+
+                                {% for price, data in orderbook.items %}
+                                {% if data.bids > 0 %}
+                                <div class="flex justify-between py-1 px-2">
+                                    <div class="text-green-500">{{ price }}</div> <!-- Price text color set to red -->
+                                    <div class="text-white">{{ data.bids }}</div>
+                                    <!-- Quantity text color set to white -->
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <div class="w-1/2 px-4">
+                                <div class="flex justify-between text-gray-300 text-xs py-1 px-2">
+                                    <div>Price</div>
+                                    <div>Quantity</div>
+                                </div>
+                                {% for price, data in orderbook.items %}
+                                {% if data.asks > 0 %}
+                                <div class="flex justify-between py-1 px-2">
+                                    <div class="text-red-500">{{ price }}</div> <!-- Price text color set to green -->
+                                    <div class="text-white">{{ data.asks }}</div>
+                                    <!-- Quantity text color set to white -->
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Order Book-->
+            <!-- Trade History-->
+            <div class="w-1/2 border-2">
+                <h2 class="text-gray-200 text-center border">Trade History</h2>
+
+                <div class="flex justify-between text-gray-300 text-xs py-1 px-2">
+                    <div class="">Price</div>
+                    <div class="">Quantity</div>
+                    <div class="">Time</div>
+                </div>
+
+                {% for transaction in transactionss %}
+                {% if transaction.stock.current_price < transaction.price %} <div
+                    class="flex justify-between py-1 px-2">
+                    <div class="text-red-500">{{ transaction.price }}</div>
+                    <div class="text-white">{{ transaction.quantity }}</div>
+                    <div class="text-white">{{ transaction.timestamp|time:"H:i:s" }}</div>
+            </div>
+            {% else %}
+            <div class="flex justify-between py-1 px-2">
+                <div class="text-green-500">{{ transaction.price }}</div>
+                <div class="text-white">{{ transaction.quantity }}</div>
+                <div class="text-white">{{ transaction.timestamp|time:"H:i:s" }}</div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <!-- Trade History-->
+    </div>
+</div>
+<!-- Graph and Order -->
+
+<!-- Open Order and Place Order -->
+
+<div class="w-3/12  h-screen">
+
+    <!-- Place Order -->
+    <div class="text-white bg-[#272f43] ">
+        <div class="shadow-md rounded p-6 mb-4 w-full">
+            <div class="text-lg font-bold mb-4">Place Order</div>
+            <form method="post" class="flex flex-col">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="quantity" class="block text-white text-sm font-bold mb-2">Quantity:</label>
+                    <input id="quantity" name="quantity" type="number" placeholder="Quantity" required
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4 relative">
+                    <label for="price" class="block text-white text-sm font-bold mb-2">Price:</label>
+                    <input id="price" name="price" placeholder="Price" required
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <button type="button" onclick="fetchCurrentPrice()"
+                        class="absolute bg-neutral-950 text-white px-2 rounded right-4 top-[34px]">Curr</button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <button type="submit" name="side" value="bid"
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Buy
+                    </button>
+                    <button type="submit" name="side" value="ask"
+                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Sell
+                    </button>
+                </div>
+            </form>
+        </div>
+        <script>
+            function fetchCurrentPrice() {
+                const currentPrice =  // Example current price
+                    document.getElementById('price').value = currentPrice;
+            }
+        </script>
+        <script>
+            // Load Plotly chart from JSON
+            var chartData =
+                Plotly.newPlot('chart-container', JSON.parse(chartData), {}, { responsive: true });
+        </script>
+    </div>
+
+
+    <!-- Open Order  -->
+    <div class=" h-[54%]  ">
+
+        <div class="  mx-auto   p-4">
+            <div class="flex justify-evenly  mb-4">
+                <button id="openOrdersBtn"
+                    class="px-4 py-2 text-white rounded bg-[#272f43] border-t-2 border-green-500">Open Orders</button>
+                <button id="completedOrdersBtn" class="px-4 py-2 text-white rounded">Completed Orders</button>
+            </div>
+            <div class="flex justify-between text-gray-300 text-xs py-1 px-2">
+                <div class="">Pair</div>
+                <div class="">Amount</div>
+                <div class="">Price</div>
+                <div class="">Total</div>
+            </div>
+            <div class=" w-full   ">
+                <div id="openOrders" class="w-full">
+                    <div class=" w-full mb-2">
+                        <ul>
+
+                            {% for order in open_orders %}
+                            {% if order.order_type == 'Bid' %}
+                            <li class="border-l-2 border-green-500 py-2 px-1 bg-[#272f43] text-white mb-1">
+                                <div class="flex justify-between items-center p-2">
+                                    <span class="flex flex-col">{{ order.stock.ticker }}/INR</span>
+                                    <span>{{ order.get_remaining_quantity }}/{{ order.total_quantity }}</span>
+                                    <span>{{ order.price }}</span>
+                                    <span>{{ order.open_order_total }}</span>
+                                </div>
+                            </li>
+                            {% else %}
+                            <li class="border-l-2 border-red-500 py-2 px-1 bg-[#272f43] text-white mb-1">
+                                <div class=" flex justify-between items-center p-2">
+                                    <span class="flex flex-col">{{ order.stock.ticker }}/INR</span>
+                                    <span>{{ order.get_remaining_quantity }}/{{ order.total_quantity }}</span>
+                                    <span>{{ order.price }}</span>
+                                    <span>{{ order.open_order_total }}</span>
+                                </div>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+
+
+                        </ul>
+                    </div>
+                </div>
+                <div id="completedOrders" class="w-full hidden">
+                    <div class="  w-full mb-2">
+                        <ul>
+                            {% for order in completed_orders %}
+
+
+                            {% if order.order_type == 'Bid' %}
+                            <li class="border-l-2 border-green-500 py-2 px-1 bg-[#272f43] text-white mb-1 ">
+                                <div class="flex justify-between items-center p-2">
+                                    <span class="flex flex-col">{{order.stock.ticker}}/INR</span>
+                                    <span>{{order.total_quantity}}<span>/{{order.total_quantity}}</span></span>
+                                    <span>{{order.price}}</span>
+                                    <span>{{order.completed_order_total}}</span>
+                                </div>
+                            </li>
+                            {% else %}
+                            <li class="border-l-2 border-red-500 py-2 px-1 bg-[#272f43] text-white mb-1 ">
+                                <div class=" flex justify-between items-center p-2">
+                                    <span class="flex flex-col">{{order.stock.ticker}}/INR</span>
+                                    <span>{{order.total_quantity}}<span>/{{order.total_quantity}}</span></span>
+                                    <span>{{order.price}}</span>
+                                    <span>{{order.completed_order_total}}</span>
+                                </div>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const openOrdersBtn = document.getElementById('openOrdersBtn');
+            const completedOrdersBtn = document.getElementById('completedOrdersBtn');
+            const openOrders = document.getElementById('openOrders');
+            const completedOrders = document.getElementById('completedOrders');
+
+            openOrdersBtn.addEventListener('click', () => {
+                openOrders.style.display = 'block';
+                completedOrders.style.display = 'none';
+                openOrdersBtn.classList.add('bg-[#272f43]', 'border-t-2', 'border-green-500');
+                completedOrdersBtn.classList.remove('bg-[#272f43]', 'border-t-2', 'border-green-500');
+            });
+
+            completedOrdersBtn.addEventListener('click', () => {
+                openOrders.style.display = 'none';
+                completedOrders.style.display = 'block';
+                completedOrdersBtn.classList.add('bg-[#272f43]', 'border-t-2', 'border-green-500');
+                openOrdersBtn.classList.remove('bg-[#272f43]', 'border-t-2', 'border-green-500');
+            });
+        </script>
+
+    </div>
+</div>
+<!-- Open Order and Place Order -->
+</div>
+{% endblock %}
